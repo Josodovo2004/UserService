@@ -28,6 +28,9 @@ services:
     depends_on:
       - db
     environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_DEFAULT_REGION: us-east-1  # Optional
       DATABASE_URL: postgres://postgres:1234@db/UserServiceDB
     networks:
       - app_network

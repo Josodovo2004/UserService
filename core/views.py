@@ -13,6 +13,7 @@ from rest_framework import permissions
 from django.conf import settings
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
+from core.models import UserProfile
 
 
 
@@ -40,27 +41,46 @@ class RegisterView(generics.CreateAPIView):
 
 
 
-# Assuming LoginSerializer is already implemented correctly
 class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
 
     @swagger_auto_schema(
-    operation_summary="User login",
-    operation_description="Authenticates a user and returns a token on successful login.",
-    request_body=LoginSerializer,
-    responses={200: openapi.Response("Success", schema=LoginSerializer)}
-)
+        operation_summary="User login",
+        operation_description="Authenticates a user and returns an access token on successful login.",
+        request_body=LoginSerializer,
+        responses={200: openapi.Response("Success", schema=LoginSerializer)}
+    )
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']  # Make sure 'user' is returned
-        
-        # Generate tokens
+        user = serializer.validated_data['user']  # Get the authenticated user
+
+        # Generate tokens using the CustomTokenObtainPairView logic
         refresh = RefreshToken.for_user(user)
-        return Response({
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
+        access = str(refresh.access_token)
+
+         # Get the RUC from the UserProfile
+        profile = UserProfile.objects.filter(user=user).first()
+        ruc = profile.ruc if profile else None
+
+        # Set the refresh token in a secure cookie
+        response = Response({
+            'access': access,
+            'ruc': ruc,  # Include RUC in the response
         }, status=status.HTTP_200_OK)
+
+        # Set the refresh token in an HttpOnly, Secure cookie
+        response.set_cookie(
+            key='refresh_token',
+            value=str(refresh),
+            httponly=True,
+            secure=True,  # Ensure the cookie is sent over HTTPS
+            samesite='Lax',
+            max_age=60 * 60 * 24 * 7  # 1 week
+        )
+
+        return response
+
 
 class UserListView(APIView):
     def get(self, request):

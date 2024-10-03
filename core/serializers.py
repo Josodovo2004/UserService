@@ -70,9 +70,11 @@ class LoginSerializer(serializers.Serializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    ruc = serializers.CharField(source='userprofile.ruc', read_only=True)  # Include RUC from UserProfile
+
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name']  # Include other fields as needed
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'ruc']  # Include other fields as needed
 
 
 class UserProfileSerializer(serializers.ModelSerializer):

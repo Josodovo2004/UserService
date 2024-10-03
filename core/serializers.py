@@ -39,10 +39,10 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
 
-        # Create UserProfile instance
-        UserProfile.objects.create(user=user, ruc=ruc)
+        # Create UserProfile instance if it doesn't already exist
+        UserProfile.objects.get_or_create(user=user, defaults={'ruc': ruc})
 
-        return user
+        return user  # Return the created user instance
 
 
 class LoginSerializer(serializers.Serializer):

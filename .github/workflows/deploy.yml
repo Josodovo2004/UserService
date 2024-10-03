@@ -20,12 +20,12 @@ jobs:
 
       - name: Copy files to EC2 instance
         run: |
-          scp -o StrictHostKeyChecking=no -r * ec2-user@${{ secrets.EC2_IP }}:/home/ec2-user/app/
+          scp -o StrictHostKeyChecking=no -r * ec2-user@${{ secrets.EC2_IP }}:/home/ec2-user/projects/Qickart/${{ secrets.SERVICE_NAME }}
 
       - name: Connect to EC2 and deploy
         run: |
           ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_IP }} << 'EOF'
-          cd /home/ec2-user/app/
+          cd /home/ec2-user/projects/Qickart/${{ secrets.SERVICE_NAME }}
           # Remove the corrupted docker-compose if it exists
           sudo rm -f /usr/local/bin/docker-compose
           

@@ -101,7 +101,7 @@ except Exception as e:
     print(f"Failed to connect to the database: {e}")
     
     # Set fallback values
-    DATABASES["default"]["HOST"] = "localhost"
+    DATABASES["default"]["HOST"] = "db"
 
 
 # Password validation

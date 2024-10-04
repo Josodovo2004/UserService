@@ -46,6 +46,14 @@ INSTALLED_APPS = [
     'rest_framework',  
     'drf_yasg',
     'corsheaders',
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'rest_framework.authtoken',# Google OAuth2 provider
 ]
 
 MIDDLEWARE = [
@@ -57,6 +65,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'UserService.urls'
@@ -101,7 +110,7 @@ except Exception as e:
     print(f"Failed to connect to the database: {e}")
     
     # Set fallback values
-    DATABASES["default"]["HOST"] = "db"
+    DATABASES["default"]["HOST"] = "localhost"
 
 
 # Password validation
@@ -173,3 +182,23 @@ SIMPLE_JWT = {
     'USER_ID_FIELD': 'id',  # Field used to identify the user
     'USER_ID_CLAIM': 'user_id',  # Claim name in the token
 }
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        },
+        'OAUTH_PKCE_ENABLED': True,
+    }
+}
+
+SITE_ID = 1
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+)

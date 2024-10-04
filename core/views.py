@@ -14,7 +14,9 @@ from django.conf import settings
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
 from core.models import UserProfile
-
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from allauth.socialaccount.providers.oauth2.client import OAuth2Client
+from dj_rest_auth.registration.views import SocialLoginView
 
 
 class RegisterView(generics.CreateAPIView):
@@ -128,3 +130,20 @@ class CustomTokenRefreshView(TokenRefreshView):
         data = {'refresh': refresh_token}
         request.data['refresh'] = refresh_token
         return super().post(request, *args, **kwargs)
+    
+    
+    
+import requests
+from django.conf import settings
+from django.contrib.auth.models import User
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework import status
+from allauth.socialaccount.models import SocialAccount
+
+class GoogleLoginView(SocialLoginView):
+    adapter_class = GoogleOAuth2Adapter
+    callback_url = "http://localgost:3000"
+    client_class = OAuth2Client
+
+    

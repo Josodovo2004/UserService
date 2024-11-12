@@ -93,12 +93,12 @@ WSGI_APPLICATION = 'UserService.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 DATABASES = {
     "default": {
-        "ENGINE": dbEngine,
-        "NAME": nameDb,
-        "USER": userDb,
+        "ENGINE": 'django.db.backends.postgresql',
+        "NAME": 'UserServiceDB',
+        "USER": 'postgres',
         "PASSWORD": passwordDb,
-        "HOST": hostDb,
-        "PORT": portDb,
+        "HOST": 'db',
+        "PORT": '5432',
     }
 }
 

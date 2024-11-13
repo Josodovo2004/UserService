@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import environ, os
-from .awsData import sharedKey, dbEngine, nameDb, passwordDb, userDb, hostDb, portDb 
+from .awsData import sharedKey, passwordDb
 from django.db.utils import OperationalError
 
 

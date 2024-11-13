@@ -26,6 +26,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_IP }} << 'EOF'
           cd /home/ec2-user/projects/Qickart/${{ secrets.SERVICE_NAME }}
+          
           # Remove the corrupted docker-compose if it exists
           sudo rm -f /usr/local/bin/docker-compose
           
@@ -34,9 +35,14 @@ jobs:
           sudo chmod +x /usr/local/bin/docker-compose
           
           # Stop and remove old containers
-          docker-compose down
+          docker-compose down --remove-orphans
+          
+          # Prune unused images and volumes for this specific project
+          docker image prune -f --filter "label=project=${{ secrets.SERVICE_NAME }}"
+          docker volume ls -q --filter "label=project=${{ secrets.SERVICE_NAME }}" | xargs -r docker volume rm
           
           # Build and start containers
-          docker-compose up -d --build
+          docker-compose up -d --build --no-recreate db
+          docker-compose up -d --build web
           exit
           EOF
